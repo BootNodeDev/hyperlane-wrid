@@ -19,7 +19,7 @@ contract TransferrableOwnableMulticall is Ownable, Initializable {
         _transferOwnership(_owner);
     }
 
-    function multicall(CallLib.Call[] calldata calls) external onlyOwner returns (bytes[] memory returnData) {
+    function multicall(CallLib.Call[] calldata calls) external payable onlyOwner returns (bytes[] memory returnData) {
         uint256 i = 0;
         uint256 len = calls.length;
         returnData = new bytes[](len);

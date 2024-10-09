@@ -10,6 +10,7 @@
     "ethers": "^6.13.3",
     "hardhat": "^2.22.12",
     "hardhat-deploy": "^0.12.4",
+    "hardhat-verify": "^1.0.0",
     "yaml": "^2.5.1"
   },
   "scripts": {

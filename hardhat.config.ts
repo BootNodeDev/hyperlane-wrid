@@ -39,6 +39,7 @@ const config: HardhatUserConfig = {
       arbitrumOne: vars.get("ARBISCAN_API_KEY", ""),
       optimisticEthereum: vars.get("OPTIMISM_API_KEY", ""),
       base: vars.get("BASESCAN_API_KEY", ""),
+      baseSepolia: vars.get("BASESCAN_API_KEY", ""),
       sepolia: vars.get("ETHERSCAN_API_KEY", ""),
     },
   },

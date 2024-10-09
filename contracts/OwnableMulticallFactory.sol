@@ -24,32 +24,22 @@ contract OwnableMulticallFactory {
     function deployAndCall(CallLib.Call[] calldata _calls)
         external
         payable
-        returns (address payable _multicall, bytes[] memory returnData)
+        returns (address payable multicall, bytes[] memory returnData)
     {
-        bool _deployed = false;
         bytes32 _salt = _getSalt(msg.sender);
 
-        _multicall = _getMulticallAddress(_salt);
+        bytes memory _bytecode = MinimalProxy.bytecode(implementation);
+        multicall = payable(Create2.deploy(0, _salt, _bytecode));
 
-        if (!Address.isContract(_multicall)) {
-            bytes memory _bytecode = MinimalProxy.bytecode(implementation);
-            _multicall = payable(Create2.deploy(0, _salt, _bytecode));
+        TransferrableOwnableMulticall(multicall).initialize(address(this));
 
-            Address.sendValue(_multicall, msg.value);
-
-            TransferrableOwnableMulticall(_multicall).initialize(address(this));
-            _deployed = true;
-
-            emit MulticallCreated(msg.sender, _multicall);
-        }
+        emit MulticallCreated(msg.sender, multicall);
 
         if (_calls.length > 0) {
-            returnData = TransferrableOwnableMulticall(_multicall).multicall(_calls);
+            returnData = TransferrableOwnableMulticall(multicall).multicall{value: msg.value}(_calls);
         }
 
-        if (_deployed) {
-            TransferrableOwnableMulticall(_multicall).transferOwnership(msg.sender);
-        }
+        TransferrableOwnableMulticall(multicall).transferOwnership(msg.sender);
     }
 
     function getMulticallAddress(address _owner) public view returns (address) {
