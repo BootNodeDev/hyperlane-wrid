@@ -80,18 +80,18 @@ The solution make use of some smart contracts that were not audited.
 
 ### Verification
 
-The solution does not provide a way to verify the created smart contracts. Using
+It does not provide a way to verify the created smart contracts. Using
 `npx hardhat verify --network NETWORK_NAME CONTRACT_ADDRESS CONSTRUCTOR_PARAMS` should work.
 
 ### Status checking
 
-It does't check the status of the messages. But at the end it prints some useful information, like `messageId` of all
+It does no check the status of the messages. But at the end it prints some useful information, like `messageId` of all
 `InterchainAccountRouter` calls that you can use on https://explorer.hyperlane.xyz
 
 ### Config file results
 
-It doesn't write results to the configuration files.
+It does not write results to the configuration files.
 
 ### Technical debts
 
-Like every good peace of software it contains technical debts
+Like every good piece of software it contains technical debts.
