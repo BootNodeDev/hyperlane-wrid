@@ -21,11 +21,9 @@ contract OwnableMulticallFactory {
         bytecodeHash = keccak256(_bytecode);
     }
 
-    function deployAndCall(CallLib.Call[] calldata _calls)
-        external
-        payable
-        returns (address payable multicall, bytes[] memory returnData)
-    {
+    function deployAndCall(
+        CallLib.Call[] calldata _calls
+    ) external payable returns (address payable multicall, bytes[] memory returnData) {
         bytes32 _salt = _getSalt(msg.sender);
 
         bytes memory _bytecode = MinimalProxy.bytecode(implementation);
@@ -36,7 +34,7 @@ contract OwnableMulticallFactory {
         emit MulticallCreated(msg.sender, multicall);
 
         if (_calls.length > 0) {
-            returnData = TransferrableOwnableMulticall(multicall).multicall{value: msg.value}(_calls);
+            returnData = TransferrableOwnableMulticall(multicall).multicall{ value: msg.value }(_calls);
         }
 
         TransferrableOwnableMulticall(multicall).transferOwnership(msg.sender);
@@ -55,5 +53,5 @@ contract OwnableMulticallFactory {
     }
 
     // solhint-disable-next-line no-empty-blocks
-    receive() external payable { }
+    receive() external payable {}
 }

@@ -33,5 +33,5 @@ contract TransferrableOwnableMulticall is Ownable, Initializable {
     }
 
     // solhint-disable-next-line no-empty-blocks
-    receive() external payable { }
+    receive() external payable {}
 }
