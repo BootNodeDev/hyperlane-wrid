@@ -1,4 +1,4 @@
-# Interchain Warp Routes Deployer
+# Warp Routes Interchain Deployer
 
 This repo contains a Hardhat script that can be used for deploying a set of Hyperlane Warp Routes executing a single
 transaction in only one chain by reading the resulting `warp-route-deployment.yaml` file generated with Hyperlane CLI
@@ -14,13 +14,13 @@ They say a picture is worth a thousand words, so I'll try to explain the whole p
 
 ## How to use it
 
--   Install dependencies
+1.   Install dependencies
 
 ```bash
 npm install
 ```
 
--   Set required Hardhat configuration variables
+2.   Set required Hardhat configuration variables
 
 `PK` deployer's private key
 
@@ -34,7 +34,7 @@ npx hardhat vars set PK
 npx hardhat vars set ALCHEMY_API_KEY
 ```
 
--   Run the script
+3.   Run the script
 
 After running Hyperlane CLI `hyperlane warp init` command copy the resulting `warp-route-deployment.yaml` file into the `configs` folder.
 
@@ -44,14 +44,14 @@ If you are going to deploy some `synthetic` routes you need to add `decimals`, `
 npm run warpDeploy -- --admin PROXY_ADMIN_ADDRESS --routersalt SOME_SALT_FOR_ROUTER_IMPL --proxysalt SOME_SALT_FOR_ROUTER_PROXY
 ```
 
-There are some required params you need:
+    There are some required params you need:
 
--   `PROXY_ADMIN_ADDRESS` The warp routes are deployed using `TransparentUpgradeableProxy` so you need to set its admin
+    - `PROXY_ADMIN_ADDRESS` The warp routes are deployed using `TransparentUpgradeableProxy` so you need to set its admin
     address.
 
--   `SOME_SALT_FOR_ROUTER_IMPL` A single use salt for deploying the router implementation. Max 11 characters
+    - `SOME_SALT_FOR_ROUTER_IMPL` A single use salt for deploying the router implementation. Max 11 characters
 
--   `SOME_SALT_FOR_ROUTER_PROXY` A single use salt for deploying the router proxy. Max 11 characters
+    - `SOME_SALT_FOR_ROUTER_PROXY` A single use salt for deploying the router proxy. Max 11 characters
 
 ## Limitations
 
