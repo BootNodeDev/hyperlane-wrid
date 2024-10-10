@@ -3,11 +3,11 @@ import { promises as fsp } from "fs";
 import { parse as yamlParse } from "yaml";
 import { WarpRouteDeployConfig } from "@hyperlane-xyz/sdk";
 
-import {OwnableMulticallFactory, InterchainAccountRouter, ICreateX} from "../../types";
+import { OwnableMulticallFactory, InterchainAccountRouter, ICreateX } from "../../types";
 import { CallLib } from "../../types/contracts/OwnableMulticallFactory";
 
 import registry from "../../configs/registry.json";
-import { HardhatRuntimeEnvironment} from "hardhat/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { ethers } from "ethers";
 
@@ -25,23 +25,24 @@ export const chainNames = {
     11155111: "sepolia",
 };
 
-
 export const getWarpDeployConfig = async (): Promise<WarpRouteDeployConfig> => {
     let configYAML = await fsp.readFile(path.resolve(__dirname, "../../configs/warp-route-deployment.yaml"), {
         encoding: "utf8",
     });
 
     return yamlParse(configYAML) as WarpRouteDeployConfig;
-}
+};
 
 type Contracts = {
     multicallFactoryContract: OwnableMulticallFactory;
     localRouterContract: InterchainAccountRouter;
     createXContract: ICreateX;
+};
 
-}
-
-export const getContracts = async (hre: HardhatRuntimeEnvironment, deployer: HardhatEthersSigner): Promise<Contracts> => {
+export const getContracts = async (
+    hre: HardhatRuntimeEnvironment,
+    deployer: HardhatEthersSigner,
+): Promise<Contracts> => {
     if (!hre.network.config.chainId) throw new Error("Chain ID not found in network config");
     const localChainId: keyof typeof registry = hre.network.config.chainId.toString() as keyof typeof registry;
 
@@ -56,20 +57,15 @@ export const getContracts = async (hre: HardhatRuntimeEnvironment, deployer: Har
             registry[localChainId as keyof typeof registry].interchainAccountRouter,
             deployer,
         ),
-        hre.ethers.getContractAt(
-            "ICreateX",
-            registry[localChainId as keyof typeof registry].createX,
-            deployer,
-        )
-    ])
+        hre.ethers.getContractAt("ICreateX", registry[localChainId as keyof typeof registry].createX, deployer),
+    ]);
 
     return {
         multicallFactoryContract,
         localRouterContract,
-        createXContract
-    }
-}
-
+        createXContract,
+    };
+};
 
 export const parseDispatchIdEvent = async (receipt: ethers.TransactionReceipt): Promise<any> => {
     // Define the event fragment for the DispatchId event
@@ -100,7 +96,7 @@ export const parseDispatchIdEvent = async (receipt: ethers.TransactionReceipt): 
     }
 
     return messagesData;
-}
+};
 
 export function addressToBytes32(addr: string): string {
     return ethers.zeroPadValue(addr, 32);

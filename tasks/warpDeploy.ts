@@ -6,17 +6,17 @@ import { WarpRouteDeployConfig } from "@hyperlane-xyz/sdk";
 import { CallLib } from "../types/contracts/OwnableMulticallFactory";
 
 import {
-  chainIds,
-  chainNames,
-  getWarpDeployConfig,
-  getContracts,
-  encodeSalt,
-  efficientHash,
-  createWarpRouterCall,
-  addressToBytes32,
-  overrideGasLimit,
-  parseDispatchIdEvent,
-  showResults,
+    chainIds,
+    chainNames,
+    getWarpDeployConfig,
+    getContracts,
+    encodeSalt,
+    efficientHash,
+    createWarpRouterCall,
+    addressToBytes32,
+    overrideGasLimit,
+    parseDispatchIdEvent,
+    showResults,
 } from "./utils";
 
 task("warpDeploy", "Deploy multiple warp routes from a single chain")
@@ -33,11 +33,7 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
 
         const localChainId: string = hre.network.config.chainId.toString();
 
-        const {
-          multicallFactoryContract,
-          localRouterContract,
-          createXContract
-        } = await getContracts(hre, deployer)
+        const { multicallFactoryContract, localRouterContract, createXContract } = await getContracts(hre, deployer);
 
         const deployerMulticallAddress = await multicallFactoryContract.getMulticallAddress(deployerAddress);
 
