@@ -2,7 +2,7 @@
 
 This repo contains a Hardhat script that can be used for deploying a set of Hyperlane Warp Routes executing a single
 transaction in only one chain by reading the resulting `warp-route-deployment.yaml` file generated with Hyperlane CLI
-`hyperlane warp init` command, created as a POC for solving
+`hyperlane warp init` command. It was created as a POC for solving
 https://github.com/hyperlane-xyz/hyperlane-monorepo/issues/3498
 
 The solution makes use of Hyperlane `InterchainAccountRouter` for sending the routes creation tx's to the destination
@@ -34,11 +34,11 @@ npx hardhat vars set PK
 npx hardhat vars set ALCHEMY_API_KEY
 ```
 
--   Run the script After running Hyperlane CLI `hyperlane warp init` command copy the resulting
-    `warp-route-deployment.yaml` file into the `configs` folder.
+-   Run the script
 
-I you are going to deploy some `synthetic` routes you need to add `decimals`, `name`, `symbol` and `totalSupply`
-attributes in the configuration file since Hyperlane CLI doesn't do it.
+After running Hyperlane CLI `hyperlane warp init` command copy the resulting `warp-route-deployment.yaml` file into the `configs` folder.
+
+If you are going to deploy some `synthetic` routes you need to add `decimals`, `name`, `symbol` and `totalSupply` attributes in the configuration file since Hyperlane CLI doesn't do it.
 
 ```bash
 npm run warpDeploy -- --admin PROXY_ADMIN_ADDRESS --routersalt SOME_SALT_FOR_ROUTER_IMPL --proxysalt SOME_SALT_FOR_ROUTER_PROXY
