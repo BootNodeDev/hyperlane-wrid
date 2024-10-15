@@ -1,5 +1,4 @@
 import { task } from "hardhat/config";
-import registry from "../configs/registry.json";
 import { ethers } from "ethers";
 import type { TaskArguments } from "hardhat/types";
 import { WarpRouteDeployConfig } from "@hyperlane-xyz/sdk";
@@ -121,6 +120,8 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
             )),
         );
 
+        const hyperlaneRegistry = await getHyperlaneRegistry(chainNames[hre.network.config.chainId as keyof typeof chainNames]);
+
         let remoteICACalls: CallLib.CallStruct[] = await Promise.all(
             Object.keys(dataByChain).map(async (name: string) => {
                 let data = dataByChain[name];
@@ -143,7 +144,7 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
                     ["bytes32", "bytes32", "tuple(bytes32,uint256,bytes)[]"],
                     [
                         addressToBytes32(deployerMulticallAddress),
-                        addressToBytes32(registry[localChainId as keyof typeof registry].interchainAccountIsm),
+                        addressToBytes32(hyperlaneRegistry.interchainAccountIsm),
                         createCalls.map((call) => [call.to, call.value, call.data]),
                     ],
                 );
