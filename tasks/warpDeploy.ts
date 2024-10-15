@@ -17,6 +17,7 @@ import {
     overrideGasLimit,
     parseDispatchIdEvent,
     showResults,
+    getHyperlaneRegistry
 } from "./utils";
 
 task("warpDeploy", "Deploy multiple warp routes from a single chain")

@@ -44,7 +44,6 @@ If you are going to deploy some `synthetic` routes you need to add `decimals`, `
 npm run warpDeploy -- --admin PROXY_ADMIN_ADDRESS --routersalt SOME_SALT_FOR_ROUTER_IMPL --proxysalt SOME_SALT_FOR_ROUTER_PROXY
 ```
 
-
 There are some required params you need:
 
 - `PROXY_ADMIN_ADDRESS` The warp routes are deployed using `TransparentUpgradeableProxy` so you need to set its admin

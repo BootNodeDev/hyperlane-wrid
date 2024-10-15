@@ -33,6 +33,13 @@ export const getWarpDeployConfig = async (): Promise<WarpRouteDeployConfig> => {
     return yamlParse(configYAML) as WarpRouteDeployConfig;
 };
 
+//workaround for for using the @hyperlane-xyz/registry which is an ESM but Hardhat is quite brittle with ESM
+export const getHyperlaneRegistry = async (chainName: string): Promise<any> => {
+    const registry = await import(`@hyperlane-xyz/registry/chains/${chainName}/addresses.json`);
+
+    return registry;
+};
+
 type Contracts = {
     multicallFactoryContract: OwnableMulticallFactory;
     localRouterContract: InterchainAccountRouter;
@@ -46,6 +53,8 @@ export const getContracts = async (
     if (!hre.network.config.chainId) throw new Error("Chain ID not found in network config");
     const localChainId: keyof typeof registry = hre.network.config.chainId.toString() as keyof typeof registry;
 
+    const hyperlaneRegistry = await getHyperlaneRegistry(chainNames[hre.network.config.chainId as keyof typeof chainNames]);
+
     const [multicallFactoryContract, localRouterContract, createXContract] = await Promise.all([
         hre.ethers.getContractAt(
             "OwnableMulticallFactory",
@@ -54,7 +63,7 @@ export const getContracts = async (
         ),
         hre.ethers.getContractAt(
             "InterchainAccountRouter",
-            registry[localChainId as keyof typeof registry].interchainAccountRouter,
+            hyperlaneRegistry.interchainAccountRouter,
             deployer,
         ),
         hre.ethers.getContractAt("ICreateX", registry[localChainId as keyof typeof registry].createX, deployer),
