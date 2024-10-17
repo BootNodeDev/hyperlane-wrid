@@ -53,7 +53,9 @@ export const getContracts = async (
     if (!hre.network.config.chainId) throw new Error("Chain ID not found in network config");
     const localChainId: keyof typeof registry = hre.network.config.chainId.toString() as keyof typeof registry;
 
-    const hyperlaneRegistry = await getHyperlaneRegistry(chainNames[hre.network.config.chainId as keyof typeof chainNames]);
+    const hyperlaneRegistry = await getHyperlaneRegistry(
+        chainNames[hre.network.config.chainId as keyof typeof chainNames],
+    );
 
     const [multicallFactoryContract, localRouterContract, createXContract] = await Promise.all([
         hre.ethers.getContractAt(
@@ -61,11 +63,7 @@ export const getContracts = async (
             registry[localChainId as keyof typeof registry].multicallFactory,
             deployer,
         ),
-        hre.ethers.getContractAt(
-            "InterchainAccountRouter",
-            hyperlaneRegistry.interchainAccountRouter,
-            deployer,
-        ),
+        hre.ethers.getContractAt("InterchainAccountRouter", hyperlaneRegistry.interchainAccountRouter, deployer),
         hre.ethers.getContractAt("ICreateX", registry[localChainId as keyof typeof registry].createX, deployer),
     ]);
 
@@ -139,16 +137,19 @@ export async function createWarpRouterCall(
     hre: HardhatRuntimeEnvironment,
     createXContract: ICreateX,
     routerAddress: string,
+    proxyAdminAddress: string,
     proxyAddress: string,
     config: WarpRouteDeployConfig,
     chainName: string,
     routerSalt: string,
+    proxyAdminSalt: string,
     proxySalt: string,
     admin: string,
     owner: string,
     domains: number[],
     routerAddressesB32: string[],
 ): Promise<CallLib.CallStruct[]> {
+    const ProxyAdminArtifact = await hre.ethers.getContractFactory("contracts/ProxyAdmin.sol:ProxyAdmin");
     const TransparentUpgradeableProxyArtifact = await hre.ethers.getContractFactory("TransparentUpgradeableProxy");
 
     let warpRouterByteCode: string;
@@ -210,12 +211,17 @@ export async function createWarpRouterCall(
         ]);
     }
 
+    const proxyAdminCreationCode = ProxyAdminArtifact.bytecode;
+    const proxyAdminConstructorArgs = ethers.AbiCoder.defaultAbiCoder().encode(["address"], [admin]);
+
+    const proxyAdminByteCode = hre.ethers.concat([proxyAdminCreationCode, proxyAdminConstructorArgs]);
+
     const proxyCreationCode = TransparentUpgradeableProxyArtifact.bytecode;
     const proxyConstructorArgs = ethers.AbiCoder.defaultAbiCoder().encode(
         ["address", "address", "bytes"],
         [
             routerAddress, // pre computed router implementation address
-            admin,
+            proxyAdminAddress, // pre computed proxy admin address
             "0x",
         ],
     );
@@ -230,6 +236,15 @@ export async function createWarpRouterCall(
             data: createXContract.interface.encodeFunctionData("deployCreate3(bytes32,bytes)", [
                 routerSalt,
                 warpRouterByteCode,
+            ]),
+        },
+        {
+            // deploy ProxyAdmin
+            to: ethers.zeroPadValue(await createXContract.getAddress(), 32),
+            value: 0,
+            data: createXContract.interface.encodeFunctionData("deployCreate3(bytes32,bytes)", [
+                proxyAdminSalt,
+                proxyAdminByteCode,
             ]),
         },
         {
@@ -273,6 +288,7 @@ export function showResults(
     chainName: string,
     icaAddress: string,
     routerAddress: string,
+    proxyAdminAddress: string,
     proxyAddress: string,
     messageData: any = null,
 ) {
@@ -282,6 +298,7 @@ export function showResults(
       ${chainName}:
         ICA Address: ${icaAddress}
         Router Implementation: ${routerAddress}
+        Proxy Admin: ${proxyAdminAddress}
         Router Proxy: ${proxyAddress}
       `,
         );
@@ -291,6 +308,7 @@ export function showResults(
       ${chainName}:
         ICA Address: ${icaAddress}
         Router Implementation: ${routerAddress}
+        Proxy Admin: ${proxyAdminAddress}
         Router Proxy: ${proxyAddress}
         Message data:
           messageId: ${messageData.messageId}

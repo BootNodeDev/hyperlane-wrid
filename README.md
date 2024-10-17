@@ -14,13 +14,13 @@ They say a picture is worth a thousand words, so I'll try to explain the whole p
 
 ## How to use it
 
-1.   Install dependencies
+1.  Install dependencies
 
 ```bash
 npm install
 ```
 
-2.   Set required Hardhat configuration variables
+2.  Set required Hardhat configuration variables
 
 `PK` deployer's private key
 
@@ -34,24 +34,28 @@ npx hardhat vars set PK
 npx hardhat vars set ALCHEMY_API_KEY
 ```
 
-3.   Run the script
+3.  Run the script
 
-After running Hyperlane CLI `hyperlane warp init` command copy the resulting `warp-route-deployment.yaml` file into the `configs` folder.
+After running Hyperlane CLI `hyperlane warp init` command copy the resulting `warp-route-deployment.yaml` file into the
+`configs` folder.
 
-If you are going to deploy some `synthetic` routes you need to add `decimals`, `name`, `symbol` and `totalSupply` attributes in the configuration file since Hyperlane CLI doesn't do it.
+If you are going to deploy some `synthetic` routes you need to add `decimals`, `name`, `symbol` and `totalSupply`
+attributes in the configuration file since Hyperlane CLI doesn't do it.
 
 ```bash
-npm run warpDeploy -- --admin PROXY_ADMIN_ADDRESS --routersalt SOME_SALT_FOR_ROUTER_IMPL --proxysalt SOME_SALT_FOR_ROUTER_PROXY
+npm run warpDeploy -- --network NETWORK_NAME --routersalt SOME_SALT_FOR_ROUTER_IMPL --proxyadminsalt SOME_SALT_FOR_PROXY_ADMIN --proxysalt SOME_SALT_FOR_ROUTER_PROXY
 ```
 
 There are some required params you need:
 
-- `PROXY_ADMIN_ADDRESS` The warp routes are deployed using `TransparentUpgradeableProxy` so you need to set its admin
-    address.
+-   `NETWORK_NAME` Name of the network from which the task is going to run.
 
-- `SOME_SALT_FOR_ROUTER_IMPL` A single use salt for deploying the router implementation. Max 11 characters
+-   `SOME_SALT_FOR_ROUTER_IMPL` A single use salt for deploying the router implementation. Max 11 characters address.
 
-- `SOME_SALT_FOR_ROUTER_PROXY` A single use salt for deploying the router proxy. Max 11 characters
+-   `SOME_SALT_FOR_PROXY_ADMIN` A single use salt for deploying the ProxyAdmin which will be set as the
+    `TransparentUpgradeableProxy` admin. Ownership of the ProxyRouter is assigned to user ICA. Max 11 characters
+
+-   `SOME_SALT_FOR_ROUTER_PROXY` A single use salt for deploying the router proxy. Max 11 characters
 
 ## Limitations
 
