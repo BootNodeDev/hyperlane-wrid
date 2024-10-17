@@ -16,13 +16,13 @@ import {
     overrideGasLimit,
     parseDispatchIdEvent,
     showResults,
-    getHyperlaneRegistry
+    getHyperlaneRegistry,
 } from "./utils";
 
 task("warpDeploy", "Deploy multiple warp routes from a single chain")
-    .addParam("admin", "Address of the proxies admin")
     .addParam("routersalt", "Salt for deploying the router implementation")
-    .addParam("proxysalt", "Salto for deploying the router proxy")
+    .addParam("proxyadminsalt", "Salt for deploying the proxy admin")
+    .addParam("proxysalt", "Salt for deploying the router proxy")
     .setAction(async function (taskArguments: TaskArguments, hre) {
         const config: WarpRouteDeployConfig = await getWarpDeployConfig();
         const accounts = await hre.ethers.getSigners();
@@ -58,22 +58,43 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
         const salts = remoteICAAddresses.map((addr: string) => {
             const routerSalt = encodeSalt(addr, taskArguments.routersalt);
             const routerGuardedSalt = efficientHash(ethers.zeroPadValue(addr, 32), routerSalt);
+            const proxyAdminSalt = encodeSalt(addr, taskArguments.proxyadminsalt);
+            const proxyAdminGuardedSalt = efficientHash(ethers.zeroPadValue(addr, 32), proxyAdminSalt);
             const proxySalt = encodeSalt(addr, taskArguments.proxysalt);
             const proxyGuardedSalt = efficientHash(ethers.zeroPadValue(addr, 32), proxySalt);
-            return { routerSalt, routerGuardedSalt, proxySalt, proxyGuardedSalt };
+            return {
+                routerSalt,
+                routerGuardedSalt,
+                proxyAdminSalt,
+                proxyAdminGuardedSalt,
+                proxySalt,
+                proxyGuardedSalt,
+            };
         });
 
         const localRouterSalt = encodeSalt(deployerMulticallAddress, taskArguments.routersalt);
         const localGuardedSalt = efficientHash(ethers.zeroPadValue(deployerMulticallAddress, 32), localRouterSalt);
+        const localProxyAdminSalt = encodeSalt(deployerMulticallAddress, taskArguments.proxyadminsalt);
+        const localProxyAdminGuardedSalt = efficientHash(
+            ethers.zeroPadValue(deployerMulticallAddress, 32),
+            localProxyAdminSalt,
+        );
         const localProxySalt = encodeSalt(deployerMulticallAddress, taskArguments.proxysalt);
         const localProxyGuardedSalt = efficientHash(ethers.zeroPadValue(deployerMulticallAddress, 32), localProxySalt);
 
         const localWarpRouteAddress = await createXContract["computeCreate3Address(bytes32)"](localGuardedSalt);
+        const localWarpProxyAdminAddress =
+            await createXContract["computeCreate3Address(bytes32)"](localProxyAdminGuardedSalt);
         const localWarpProxyAddress = await createXContract["computeCreate3Address(bytes32)"](localProxyGuardedSalt);
 
         const remoteWarpRouteAddresses = await Promise.all(
             salts.map((salt: { routerGuardedSalt: string }) => {
                 return createXContract["computeCreate3Address(bytes32)"](salt.routerGuardedSalt);
+            }),
+        );
+        const remoteProxyAdminAddresses = await Promise.all(
+            salts.map((salt: { proxyAdminGuardedSalt: string }) => {
+                return createXContract["computeCreate3Address(bytes32)"](salt.proxyAdminGuardedSalt);
             }),
         );
         const remoteWarpProxyAddresses = await Promise.all(
@@ -88,13 +109,17 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
                 [chainName]: {
                     icaAddress: remoteICAAddresses[index],
                     routerSalt: salts[index].routerSalt,
+                    proxyAdminSalt: salts[index].proxyAdminSalt,
                     proxySalt: salts[index].proxySalt,
                     routerAddress: remoteWarpRouteAddresses[index],
+                    proxyAdminAddress: remoteProxyAdminAddresses[index],
                     proxyAddress: remoteWarpProxyAddresses[index],
                     config: config[chainName],
                 },
             };
         }, {});
+
+        console.log(dataByChain);
 
         const domains = Object.keys(config).map((key: string) => chainIds[key as keyof typeof chainIds]);
         const routerAddressesB32 = [
@@ -108,19 +133,23 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
                 hre,
                 createXContract,
                 localWarpRouteAddress,
+                localWarpProxyAdminAddress,
                 localWarpProxyAddress,
                 config,
                 chainNames[parseInt(localChainId) as keyof typeof chainNames],
                 localRouterSalt,
+                localProxyAdminSalt,
                 localProxySalt,
-                taskArguments.admin,
+                deployerMulticallAddress,
                 deployerMulticallAddress,
                 domains,
                 routerAddressesB32,
             )),
         );
 
-        const hyperlaneRegistry = await getHyperlaneRegistry(chainNames[hre.network.config.chainId as keyof typeof chainNames]);
+        const hyperlaneRegistry = await getHyperlaneRegistry(
+            chainNames[hre.network.config.chainId as keyof typeof chainNames],
+        );
 
         let remoteICACalls: CallLib.CallStruct[] = await Promise.all(
             Object.keys(dataByChain).map(async (name: string) => {
@@ -129,12 +158,14 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
                     hre,
                     createXContract,
                     data.routerAddress,
+                    data.proxyAdminAddress,
                     data.proxyAddress,
                     config,
                     name,
                     data.routerSalt,
+                    data.proxyAdminSalt,
                     data.proxySalt,
-                    taskArguments.admin,
+                    data.icaAddress,
                     data.icaAddress,
                     domains,
                     routerAddressesB32,
@@ -202,6 +233,7 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
                 chainNames[parseInt(localChainId) as keyof typeof chainNames],
                 deployerMulticallAddress,
                 localWarpRouteAddress,
+                localWarpProxyAdminAddress,
                 localWarpProxyAddress,
             );
 
@@ -210,6 +242,7 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
                     chainName,
                     dataByChain[chainName].icaAddress,
                     dataByChain[chainName].routerAddress,
+                    dataByChain[chainName].proxyAdminAddress,
                     dataByChain[chainName].proxyAddress,
                     messagesData[chainName],
                 );

@@ -38,10 +38,21 @@ const config: HardhatUserConfig = {
         apiKey: {
             arbitrumOne: vars.get("ARBISCAN_API_KEY", ""),
             optimisticEthereum: vars.get("OPTIMISM_API_KEY", ""),
+            "optimism-sepolia": vars.get("OPTIMISM_API_KEY", ""),
             base: vars.get("BASESCAN_API_KEY", ""),
             baseSepolia: vars.get("BASESCAN_API_KEY", ""),
             sepolia: vars.get("ETHERSCAN_API_KEY", ""),
         },
+        customChains: [
+            {
+                network: "optimism-sepolia",
+                chainId: 11155420,
+                urls: {
+                    apiURL: "https://api-sepolia-optimistic.etherscan.io/api",
+                    browserURL: "https://sepolia-optimism.etherscan.io/",
+                },
+            },
+        ],
     },
     networks: {
         hardhat: {},
