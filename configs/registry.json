@@ -1,25 +1,17 @@
 {
     "11155420": {
-        "interchainAccountRouter": "0xa95B9cE4B887Aa659e266a5BA9F7E1792bB5080C",
-        "interchainAccountIsm": "0xb7484d3CA5Cb573a148DA31d408fd0EfBAAC8aAC",
         "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF",
         "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed"
     },
     "84532": {
-        "interchainAccountRouter": "0xa95B9cE4B887Aa659e266a5BA9F7E1792bB5080C",
-        "interchainAccountIsm": "0xb7484d3CA5Cb573a148DA31d408fd0EfBAAC8aAC",
         "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF",
         "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed"
     },
     "421614": {
-        "interchainAccountRouter": "0xa95B9cE4B887Aa659e266a5BA9F7E1792bB5080C",
-        "interchainAccountIsm": "0xb7484d3CA5Cb573a148DA31d408fd0EfBAAC8aAC",
         "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF",
         "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed"
     },
     "11155111": {
-        "interchainAccountRouter": "0xa95B9cE4B887Aa659e266a5BA9F7E1792bB5080C",
-        "interchainAccountIsm": "0xb7484d3CA5Cb573a148DA31d408fd0EfBAAC8aAC",
         "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF",
         "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed"
     }

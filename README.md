@@ -57,18 +57,46 @@ There are some required params you need:
 
 -   `SOME_SALT_FOR_ROUTER_PROXY` A single use salt for deploying the router proxy. Max 11 characters
 
-## Limitations
+## Supported Networks
 
-This solution is a POC so it contains several limitation:
+For running the task on a given network it is required the presence of 3 smart contracts, Hyperlane
+[`InterchainAccountRouter`](https://docs.hyperlane.xyz/docs/reference/applications/interchain-account),
+`MulticallFactory` and [`CreateX`](https://github.com/pcaversaccio/createx).
 
-### Networks
-
-It only supports the following testnets
+This repository already supports the following networks:
 
 -   Base Sepolia
 -   Optimism Sepolia
 -   Arbitrum Sepolia
 -   Sepolia
+
+I you need to run this from a different chain you would need to make sure that `InterchainAccountRouter` and `CreateX`
+deployed and deploy a new `MulticallFactory` by following the next steps:
+
+1. Add the network configs on the [`hardhat.config.ts`](hardhat.config.ts) file
+
+2. Run
+
+```bash
+npm run multicallFactory -- --network YOUR_NETWORK
+```
+
+3. Add the resulting address together with `CreateX` address into the [`registry.json`](configs/registry.json) file,
+   like
+
+```json
+{
+    ... OTHER NETWORKS,
+    "YOR NETWORK ID": {
+        "multicallFactory": "RESULTING ADDRESS",
+        "createX": "CREATEX ADDRESS ON YOUR NETWORK"
+    }
+}
+```
+
+## Limitations
+
+This solution is a POC so it contains several limitation:
 
 ### Warp Routes Types
 
