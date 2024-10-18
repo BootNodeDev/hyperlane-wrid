@@ -8,3 +8,5 @@ import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/trans
 import { HypERC20 } from "@hyperlane-xyz/core/contracts/token/HypERC20.sol";
 import { HypERC20Collateral } from "@hyperlane-xyz/core/contracts/token/HypERC20Collateral.sol";
 import { HypNative } from "@hyperlane-xyz/core/contracts/token/HypNative.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import { IERC721Metadata } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";

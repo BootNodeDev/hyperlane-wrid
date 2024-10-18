@@ -24,7 +24,7 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
     .addParam("proxyadminsalt", "Salt for deploying the proxy admin")
     .addParam("proxysalt", "Salt for deploying the router proxy")
     .setAction(async function (taskArguments: TaskArguments, hre) {
-        const config: WarpRouteDeployConfig = await getWarpDeployConfig();
+        const config: WarpRouteDeployConfig = await getWarpDeployConfig(hre);
         const accounts = await hre.ethers.getSigners();
         const deployer = accounts[0];
         const deployerAddress = deployer.address;
