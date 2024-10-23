@@ -110,7 +110,7 @@ const hasTokenMetadata = (config: any): boolean => {
     return config.name && config.symbol && config.decimals;
 };
 
-//workaround for for using the @hyperlane-xyz/registry which is an ESM but Hardhat is quite brittle with ESM
+//workaround for using the @hyperlane-xyz/registry which is an ESM but Hardhat is quite brittle with ESM
 export const getHyperlaneRegistry = async (chainName: string): Promise<any> => {
     const registry = await import(`@hyperlane-xyz/registry/chains/${chainName}/addresses.json`);
 
@@ -234,7 +234,7 @@ export async function createWarpRouterCall(
     let routerInitCall: string;
     let enrollRoutersCall: string;
 
-    if (config[chainName].type == "collateral") {
+    if (config[chainName].type === "collateral") {
         const HypERC20CollateralArtifact = await hre.ethers.getContractFactory("HypERC20Collateral");
         const warpRouterCreationCode = await HypERC20CollateralArtifact.bytecode;
         // Encode the proxy constructor arguments

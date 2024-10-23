@@ -40,13 +40,13 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
         console.log("Deployer's Multicall address:", deployerMulticallAddress);
 
         const remoteChainsNames = Object.keys(config).filter(
-            (e) => e != chainNames[parseInt(localChainId) as keyof typeof chainNames],
+            (e) => e !== chainNames[parseInt(localChainId) as keyof typeof chainNames],
         );
 
         const remoteICAAddresses = await Promise.all(
             Object.keys(config)
                 .map((key: string) => chainIds[key as keyof typeof chainIds])
-                .filter((e) => e != parseInt(localChainId))
+                .filter((e) => e !== parseInt(localChainId))
                 .map((id: number) => {
                     return localRouterContract["getRemoteInterchainAccount(uint32,address)"](
                         id,
@@ -119,32 +119,27 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
             };
         }, {});
 
-        console.log(dataByChain);
-
         const domains = Object.keys(config).map((key: string) => chainIds[key as keyof typeof chainIds]);
         const routerAddressesB32 = [
             ethers.zeroPadValue(localWarpProxyAddress, 32),
             ...remoteWarpProxyAddresses.map((addr: string) => ethers.zeroPadValue(addr, 32)),
         ];
 
-        let calls: CallLib.CallStruct[] = [];
-        calls.push(
-            ...(await createWarpRouterCall(
-                hre,
-                createXContract,
-                localWarpRouteAddress,
-                localWarpProxyAdminAddress,
-                localWarpProxyAddress,
-                config,
-                chainNames[parseInt(localChainId) as keyof typeof chainNames],
-                localRouterSalt,
-                localProxyAdminSalt,
-                localProxySalt,
-                deployerMulticallAddress,
-                deployerMulticallAddress,
-                domains,
-                routerAddressesB32,
-            )),
+        const calls: CallLib.CallStruct[] = await createWarpRouterCall(
+            hre,
+            createXContract,
+            localWarpRouteAddress,
+            localWarpProxyAdminAddress,
+            localWarpProxyAddress,
+            config,
+            chainNames[parseInt(localChainId) as keyof typeof chainNames],
+            localRouterSalt,
+            localProxyAdminSalt,
+            localProxySalt,
+            deployerMulticallAddress,
+            deployerMulticallAddress,
+            domains,
+            routerAddressesB32,
         );
 
         const hyperlaneRegistry = await getHyperlaneRegistry(
@@ -152,8 +147,9 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
         );
 
         let remoteICACalls: CallLib.CallStruct[] = await Promise.all(
-            Object.keys(dataByChain).map(async (name: string) => {
-                let data = dataByChain[name];
+            // Object.keys(dataByChain).map(async (name: string) => {
+            Object.entries(dataByChain).map(async ([name, data]:[string, any]) => {
+                // let data = dataByChain[name];
                 let createCalls: CallLib.CallStruct[] = await createWarpRouterCall(
                     hre,
                     createXContract,
@@ -208,7 +204,7 @@ task("warpDeploy", "Deploy multiple warp routes from a single chain")
         let tx;
         const multicallCode = await hre.ethers.provider.getCode(deployerMulticallAddress);
 
-        if (multicallCode != "0x") {
+        if (multicallCode !== "0x") {
             console.log("Multicall contract already deployed, using multicall");
             const userMulticallContract = await hre.ethers.getContractAt(
                 "TransferrableOwnableMulticall",
