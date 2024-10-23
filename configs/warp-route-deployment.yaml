@@ -44,8 +44,4 @@ sepolia:
   isNft: false
   mailbox: "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766"
   owner: "0xF0e4DD3b900Ef7aa96CDf0874469671B0C48D089"
-  decimals: 18
-  name: "Warp Route USDC"
-  symbol: "WRUSDC"
-  totalSupply: 0
   type: synthetic
