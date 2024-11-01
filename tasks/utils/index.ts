@@ -9,6 +9,7 @@ import { CallLib } from "../../types/contracts/OwnableMulticallFactory";
 import registry from "../../configs/registry.json";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+import createXDeployments from "createx/deployments/deployments.json";
 import { ethers } from "ethers";
 
 export const chainIds = {
@@ -40,6 +41,12 @@ export const getHyperlaneRegistry = async (chainName: string): Promise<any> => {
     return registry;
 };
 
+export const createXAddress = async (chainId: number): Promise<string> => {
+    const isCreateXDeployed = createXDeployments.findIndex((d: any) => d.chainId == chainId);
+    if (isCreateXDeployed < 0) throw new Error("CreateX not deployed on this chain");
+    return "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed";
+}
+
 type Contracts = {
     multicallFactoryContract: OwnableMulticallFactory;
     localRouterContract: InterchainAccountRouter;
@@ -64,7 +71,7 @@ export const getContracts = async (
             deployer,
         ),
         hre.ethers.getContractAt("InterchainAccountRouter", hyperlaneRegistry.interchainAccountRouter, deployer),
-        hre.ethers.getContractAt("ICreateX", registry[localChainId as keyof typeof registry].createX, deployer),
+        hre.ethers.getContractAt("ICreateX", await createXAddress(hre.network.config.chainId), deployer),
     ]);
 
     return {

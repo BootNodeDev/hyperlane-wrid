@@ -81,15 +81,14 @@ deployed and deploy a new `MulticallFactory` by following the next steps:
 npm run multicallFactory -- --network YOUR_NETWORK
 ```
 
-3. Add the resulting address together with `CreateX` address into the [`registry.json`](configs/registry.json) file,
+3. Add the resulting address into the [`registry.json`](configs/registry.json) file,
    like
 
 ```json
 {
     ... OTHER NETWORKS,
     "YOR NETWORK ID": {
-        "multicallFactory": "RESULTING ADDRESS",
-        "createX": "CREATEX ADDRESS ON YOUR NETWORK"
+        "multicallFactory": "RESULTING ADDRESS"
     }
 }
 ```
