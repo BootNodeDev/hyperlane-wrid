@@ -1,18 +1,14 @@
 {
     "11155420": {
-        "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF",
-        "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed"
+        "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF"
     },
     "84532": {
-        "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF",
-        "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed"
+        "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF"
     },
     "421614": {
-        "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF",
-        "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed"
+        "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF"
     },
     "11155111": {
-        "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF",
-        "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed"
+        "multicallFactory": "0x694aC5B12cADAfEE1b3EC689ccBB14fc49118eAF"
     }
 }

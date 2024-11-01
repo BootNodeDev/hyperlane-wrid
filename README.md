@@ -67,7 +67,7 @@ This repository already supports the following networks:
 -   Arbitrum Sepolia
 -   Sepolia
 
-I you need to run this from a different chain you would need to make sure that `InterchainAccountRouter` and `CreateX`
+I you need to run this from a different chain you would need to make sure that [`InterchainAccountRouter`](https://github.com/hyperlane-xyz/hyperlane-registry/tree/main/chains) and [`CreateX`](https://github.com/pcaversaccio/createx/blob/main/deployments/deployments.json)
 deployed and deploy a new `MulticallFactory` by following the next steps:
 
 1. Add the network configs on the [`hardhat.config.ts`](hardhat.config.ts) file
@@ -78,15 +78,14 @@ deployed and deploy a new `MulticallFactory` by following the next steps:
 npm run multicallFactory -- --network YOUR_NETWORK
 ```
 
-3. Add the resulting address together with `CreateX` address into the [`registry.json`](configs/registry.json) file,
+3. Add the resulting address into the [`registry.json`](configs/registry.json) file,
    like
 
 ```json
 {
     ... OTHER NETWORKS,
     "YOR NETWORK ID": {
-        "multicallFactory": "RESULTING ADDRESS",
-        "createX": "CREATEX ADDRESS ON YOUR NETWORK"
+        "multicallFactory": "RESULTING ADDRESS"
     }
 }
 ```
