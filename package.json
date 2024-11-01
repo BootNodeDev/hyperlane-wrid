@@ -31,6 +31,6 @@
         "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\"",
         "prettier:write": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
         "test": "hardhat test",
-        "warpDeploy": "hardhat warpDeploy --network base-sepolia"
+        "warpDeploy": "hardhat warpDeploy"
     }
 }
