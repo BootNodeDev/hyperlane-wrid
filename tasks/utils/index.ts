@@ -35,8 +35,11 @@ export const getWarpDeployConfig = async (hre: HardhatRuntimeEnvironment): Promi
     return validateConfig(hre, config);
 };
 
-// It would be to be able to use Hyperlane SDK to validate the config, but it's not possible at the moment
-// this would be a very simple/rough implementation
+// Ideally this should be using Hyperlane SDK to validate the config, but it's not possible at the moment given that
+// the SDK is a ESM and Hardhat is quite brittle with ESM, so this would be a very simple/rough implementation
+// According to HH docs https://hardhat.org/hardhat-runner/docs/advanced/using-esm:
+// You can write your scripts and tests as both CommonJS and ES modules. However, your Hardhat config, and any file
+// imported by it, must be CommonJS modules.
 const validateConfig = async (
     hre: HardhatRuntimeEnvironment,
     config: WarpRouteDeployConfig,
@@ -110,7 +113,10 @@ const hasTokenMetadata = (config: any): boolean => {
     return config.name && config.symbol && config.decimals;
 };
 
-//workaround for using the @hyperlane-xyz/registry which is an ESM but Hardhat is quite brittle with ESM
+//workaround for for using the @hyperlane-xyz/registry which is an ESM but Hardhat is quite brittle with ESM
+// According to HH docs https://hardhat.org/hardhat-runner/docs/advanced/using-esm:
+// You can write your scripts and tests as both CommonJS and ES modules. However, your Hardhat config, and any file
+// imported by it, must be CommonJS modules.
 export const getHyperlaneRegistry = async (chainName: string): Promise<any> => {
     const registry = await import(`@hyperlane-xyz/registry/chains/${chainName}/addresses.json`);
 
@@ -234,7 +240,7 @@ export async function createWarpRouterCall(
     let routerInitCall: string;
     let enrollRoutersCall: string;
 
-    if (config[chainName].type === "collateral") {
+    if (config[chainName].type == "collateral") {
         const HypERC20CollateralArtifact = await hre.ethers.getContractFactory("HypERC20Collateral");
         const warpRouterCreationCode = await HypERC20CollateralArtifact.bytecode;
         // Encode the proxy constructor arguments
