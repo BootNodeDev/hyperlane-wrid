@@ -26,15 +26,98 @@ export const chainNames = {
     11155111: "sepolia",
 };
 
-export const getWarpDeployConfig = async (): Promise<WarpRouteDeployConfig> => {
+export const getWarpDeployConfig = async (hre: HardhatRuntimeEnvironment): Promise<WarpRouteDeployConfig> => {
     let configYAML = await fsp.readFile(path.resolve(__dirname, "../../configs/warp-route-deployment.yaml"), {
         encoding: "utf8",
     });
 
-    return yamlParse(configYAML) as WarpRouteDeployConfig;
+    const config = yamlParse(configYAML) as WarpRouteDeployConfig;
+
+    return validateConfig(hre, config);
+};
+
+// Ideally this should be using Hyperlane SDK to validate the config, but it's not possible at the moment given that
+// the SDK is a ESM and Hardhat is quite brittle with ESM, so this would be a very simple/rough implementation
+// According to HH docs https://hardhat.org/hardhat-runner/docs/advanced/using-esm:
+// You can write your scripts and tests as both CommonJS and ES modules. However, your Hardhat config, and any file
+// imported by it, must be CommonJS modules.
+const validateConfig = async (
+    hre: HardhatRuntimeEnvironment,
+    config: WarpRouteDeployConfig,
+): Promise<WarpRouteDeployConfig> => {
+    const entries = Object.entries(config);
+    const isValid =
+        entries.some(([_, config]) => config.type === "collateral") ||
+        entries.every(([_, config]) => hasTokenMetadata(config));
+
+    if (!isValid) {
+        throw new Error("Config must include Native or Collateral OR all synthetics must define token metadata");
+    }
+
+    return completeConfigMetadata(hre, config);
+};
+
+const completeConfigMetadata = async (
+    hre: HardhatRuntimeEnvironment,
+    config: WarpRouteDeployConfig,
+): Promise<WarpRouteDeployConfig> => {
+    const entries = Object.entries(config);
+    const collateral = entries.find(([_, config]) => config.type === "collateral");
+    const synthetics = entries.filter(([_, config]) => config.type === "synthetic");
+
+    const updatedConfig = structuredClone(config);
+
+    if (collateral) {
+        const [network, route] = collateral;
+
+        if (!hre.network.config.chainId) throw new Error("Chain ID not found in network config");
+        const localChainId: string = hre.network.config.chainId.toString();
+        if (chainNames[parseInt(localChainId) as keyof typeof chainNames] !== network)
+            throw new Error("Collateral should be defined for the local chain");
+
+        let tokenAddress: string = "";
+        if ("token" in route) {
+            tokenAddress = route.token;
+        }
+
+        if (!tokenAddress) throw new Error("Token address is required for collateral");
+
+        let name: string = "";
+        let symbol: string = "";
+        let decimals: BigInt = 0n;
+
+        if (route.isNft) {
+            const token = await hre.ethers.getContractAt("IERC721Metadata", tokenAddress);
+            name = await token.name();
+            symbol = await token.symbol();
+        } else {
+            const token = await hre.ethers.getContractAt("IERC20Metadata", tokenAddress);
+            name = await token.name();
+            symbol = await token.symbol();
+            decimals = await token.decimals();
+        }
+
+        for (const [net, route] of synthetics) {
+            if (!hasTokenMetadata(route)) {
+                updatedConfig[net].name = name;
+                updatedConfig[net].symbol = symbol;
+                updatedConfig[net].decimals = Number(decimals);
+                updatedConfig[net].totalSupply = 0;
+            }
+        }
+    }
+
+    return updatedConfig;
+};
+
+const hasTokenMetadata = (config: any): boolean => {
+    return config.name && config.symbol && config.decimals;
 };
 
 //workaround for for using the @hyperlane-xyz/registry which is an ESM but Hardhat is quite brittle with ESM
+// According to HH docs https://hardhat.org/hardhat-runner/docs/advanced/using-esm:
+// You can write your scripts and tests as both CommonJS and ES modules. However, your Hardhat config, and any file
+// imported by it, must be CommonJS modules.
 export const getHyperlaneRegistry = async (chainName: string): Promise<any> => {
     const registry = await import(`@hyperlane-xyz/registry/chains/${chainName}/addresses.json`);
 

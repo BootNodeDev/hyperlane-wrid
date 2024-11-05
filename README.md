@@ -39,9 +39,6 @@ npx hardhat vars set ALCHEMY_API_KEY
 After running Hyperlane CLI `hyperlane warp init` command copy the resulting `warp-route-deployment.yaml` file into the
 `configs` folder.
 
-If you are going to deploy some `synthetic` routes you need to add `decimals`, `name`, `symbol` and `totalSupply`
-attributes in the configuration file since Hyperlane CLI doesn't do it.
-
 ```bash
 npm run warpDeploy -- --network NETWORK_NAME --routersalt SOME_SALT_FOR_ROUTER_IMPL --proxyadminsalt SOME_SALT_FOR_PROXY_ADMIN --proxysalt SOME_SALT_FOR_ROUTER_PROXY
 ```
