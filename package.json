@@ -9,6 +9,7 @@
         "@nomicfoundation/hardhat-toolbox": "^5.0.0",
         "@typescript-eslint/eslint-plugin": "^8.8.1",
         "@typescript-eslint/parser": "^8.8.1",
+        "createx": "github:pcaversaccio/createx",
         "eslint": "^9.12.0",
         "eslint-config-prettier": "^9.1.0",
         "ethers": "^6.13.3",
@@ -31,6 +32,7 @@
         "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\"",
         "prettier:write": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
         "test": "hardhat test",
+        "multicallFactory": "hardhat ignition deploy ignition/modules/MulticallFactory.ts --verify",
         "warpDeploy": "hardhat warpDeploy"
     }
 }
